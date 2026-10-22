@@ -30,6 +30,7 @@ setErrors({...errors,[e.target.name]:""})
     setLoading(true)
     setTimeout(() => {
       console.log("ilahi")
+      setLoading(false)
     }, 4000);
   }
   return (
@@ -63,7 +64,8 @@ setErrors({...errors,[e.target.name]:""})
              </div>
           {errors.password && <p className='text-red-500 text-sm'>{errors.password}</p>}
           </div>
-          <button type="submit" style={{width:'100%', padding:'13px 16px', border:0, borderRadius:'10px', background:'#4f46e5', color:'#fff', fontSize:'15px', fontWeight:700, cursor:'pointer', boxShadow:'0 6px 14px rgba(79, 70, 229, .22)'}}>Sign in</button>
+          <button disabled={loading}   className="w-full rounded-lg bg-[#0B2A2A] text-white text-sm font-medium py-2.5 transition hover:bg-[#0B6E4F] disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#0B6E4F]/40 focus:ring-offset-2"
+            type="submit" style={{width:'100%', padding:'13px 16px', border:0, borderRadius:'10px', background:'#4f46e5', color:'#fff', fontSize:'15px', fontWeight:700, cursor:'pointer', boxShadow:'0 6px 14px rgba(79, 70, 229, .22)'}}>{loading ? "Signing in…" : "Sign in"}</button>
         </form>
         <p style={{margin:'24px 0 0', textAlign:'center', color:'#9ca3af', fontSize:'13px'}}>Secure sign-in</p>
       </section>
