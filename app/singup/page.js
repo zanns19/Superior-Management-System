@@ -40,7 +40,7 @@ const handleSubmit= async(e)=>{
   if(!validate()) return;
   setLoading(true)
 try {
-  const res = await fetch(`${API_URI}/auth/api/register`,{
+  const res = await fetch(`/api/auth/register`,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     credentials:"include",
@@ -114,6 +114,12 @@ try {
             
       {errors.confirmpassword && <p className="mt-1.5 text-xs text-red-500">{errors.confirmpassword}</p>}
           </label>
+          {ServerError && (
+              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs font-semibold text-rose-300">
+                {ServerError}
+              </div>
+            )}
+
           <button disabled={loading} className="disabled:opacity-50 disabled:cursor-not-allowed" type="submit" style={{ marginTop: 4, padding: '13px 16px', border: 0, borderRadius: 8, backgroundColor: '#3157d5', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
             {loading? "Creating an account":"Create account"}
           </button>

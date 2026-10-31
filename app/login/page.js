@@ -7,6 +7,7 @@ export default function login() {
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
   const [showpassword, setShowpassword] = useState(false)
+  const [ServerError, setServerError] = useState("")
   
   const handlechange=(e)=>{
 setForm({...form,[e.target.name]:e.target.value})
@@ -24,14 +25,27 @@ setErrors({...errors,[e.target.name]:""})
     setErrors(next)
     return Object.keys(next).length===0
   }
-  const handlesubmit=(e)=>{
+  const handlesubmit= async(e)=>{
     e.preventDefault()
     if (!Validate()) return;
     setLoading(true)
-    setTimeout(() => {
-      console.log("ilahi")
-      setLoading(false)
-    }, 4000);
+    try {
+      const res = await fetch("/api/auth/login",{
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body:JSON.stringify(form)
+      })
+      const data = res.json()
+      if(!res.ok){
+        setServerError(data.message )
+        return;
+      }
+    } catch (error) {
+      
+    }
   }
   return (
     <main style={{minHeight:'100vh', display:'grid', placeItems:'center', padding:'24px', boxSizing:'border-box', background:'linear-gradient(135deg, #eef2ff, #f8fafc 55%, #e0f2fe)', fontFamily:'Inter, ui-sans-serif, system-ui, sans-serif'}}>
@@ -64,6 +78,12 @@ setErrors({...errors,[e.target.name]:""})
              </div>
           {errors.password && <p className='text-red-500 text-sm'>{errors.password}</p>}
           </div>
+          {ServerError && (
+              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs font-semibold text-rose-300">
+                {ServerError}
+              </div>
+            )}
+
           <button disabled={loading}   className="w-full rounded-lg bg-[#0B2A2A] text-white text-sm font-medium py-2.5 transition hover:bg-[#0B6E4F] disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#0B6E4F]/40 focus:ring-offset-2"
             type="submit" style={{width:'100%', padding:'13px 16px', border:0, borderRadius:'10px', background:'#4f46e5', color:'#fff', fontSize:'15px', fontWeight:700, cursor:'pointer', boxShadow:'0 6px 14px rgba(79, 70, 229, .22)'}}>{loading ? "Signing in…" : "Sign in"}</button>
         </form>
