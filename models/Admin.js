@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 const Adminschema = new mongoose.Schema({
-    name:{
+    username:{
         type:String,
         required:true,
         trim:true,
@@ -15,7 +15,11 @@ const Adminschema = new mongoose.Schema({
     passwordHash:{
         type:String,
         required:true
-    }
+    },
+    gender:{
+        type:String,
+        required:true,
+    },
 },{
     timestamps:true
 })

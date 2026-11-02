@@ -18,7 +18,7 @@ export async function POST(request) {
                     error: "email does not exist"
                 },
                 {
-                    status: "404"
+                    status: "401"
                 }
             )
         }

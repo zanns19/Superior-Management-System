@@ -2,19 +2,19 @@
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { useState } from 'react'
-export default  function singup() {
-  const router= useRouter()
-  const [form, setForm] = useState({username:"",email:"",password:""})
+export default function singup() {
+  const router = useRouter()
+  const [form, setForm] = useState({ username: "", email: "", password: "", gender: "" })
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
   const [showpassword, setShowpassword] = useState(false)
   const [confirmpassword, setConfirmpassword] = useState("")
   const [ServerError, setServerError] = useState("")
-  const handlechange=(e)=>{
-    setForm({...form,[e.target.name]:e.target.value})
-    setErrors({...errors,[e.target.name]:""})
+  const handlechange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+    setErrors({ ...errors, [e.target.name]: "" })
   }
-   const validate = () => {
+  const validate = () => {
     const next = {};
     if (!form.username.trim()) next.username = "Username is required";
     else if (form.username.trim().length < 3)
@@ -30,34 +30,37 @@ export default  function singup() {
 
     if (confirmpassword !== form.password)
       next.confirmpassword = "Passwords do not match";
+    if (!form.gender) next.gender = "Please select your gender";
 
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
-const handleSubmit= async(e)=>{
-  e.preventDefault()
-  if(!validate()) return;
-  setLoading(true)
-try {
-  const res = await fetch(`/api/auth/register`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    credentials:"include",
-    body:JSON.stringify(form)
-  })
-  const data = await res.json()
-  if(!res.ok){
-    setServerError(data.message|| "Registration Failed")
-    setLoading(false)
-    return;
-  }
-  router.push("/login")
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!validate()) return;
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(form)
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setServerError(data.message || "Registration Failed")
+        setLoading(false)
+        return;
+      }
+      router.push("/login")
 
-} catch (error) {
-  
+    }  catch (error) {
+  setServerError("Registration request failed. Please try again.");
+} finally {
+  setLoading(false);
 }
-}
+  }
 
 
   return (
@@ -71,57 +74,65 @@ try {
         <form onSubmit={handleSubmit} noValidate style={{ display: 'grid', gap: 18 }}>
           <label style={labelStyle}>
             Username
-            <input name="username" value={form.username} type='text' onChange={handlechange}  autoComplete="username" placeholder="e.g. alexsmith" required style={inputStyle} />
-            
-      {errors.username && <p className="mt-1.5 text-xs text-red-500">{errors.username}</p>}
+            <input name="username" value={form.username} type='text' onChange={handlechange} autoComplete="username" placeholder="e.g. alexsmith" required style={inputStyle} />
+
+            {errors.username && <p className="mt-1.5 text-xs text-red-500">{errors.username}</p>}
           </label>
           <label style={labelStyle}>
             Gender
-            <select name="gender" defaultValue="" required style={inputStyle}>
+            <select
+              name="gender"
+              value={form.gender}
+              onChange={handlechange}
+              required
+              style={inputStyle}
+            >
               <option value="" disabled>Select your gender</option>
               <option value="female">Female</option>
               <option value="male">Male</option>
             </select>
+            {errors.gender && <p>{errors.gender}</p>}
           </label>
           <label style={labelStyle}>
             Email address
             <input name="email" type="email" value={form.email} onChange={handlechange} autoComplete="email" placeholder="you@example.com" required style={inputStyle} />
-            
-      {errors.email && <p className="mt-1.5 text-xs text-red-500">{errors.email}</p>}
+
+            {errors.email && <p className="mt-1.5 text-xs text-red-500">{errors.email}</p>}
           </label>
           <label style={labelStyle}>
             Password
             <div className='relative'>
-            <input name="password" type={showpassword?"text":"password"} value={form.password} onChange={handlechange} autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required style={inputStyle} />
-            <button
-                  type="button"
-                  onClick={() => setShowpassword((v) => !v)}
-                  aria-label={showpassword ? "Hide password" : "Show password"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#0B2027]"
-                >
-                  {showpassword ? <EyeOffIcon /> : <EyeIcon />}
-                </button>
+              <input name="password" type={showpassword ? "text" : "password"} value={form.password} onChange={handlechange} autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required style={inputStyle} />
+              <button
+                type="button"
+                onClick={() => setShowpassword((v) => !v)}
+                aria-label={showpassword ? "Hide password" : "Show password"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#0B2027]"
+              >
+                {showpassword ? <EyeOffIcon /> : <EyeIcon />}
+              </button>
             </div>
-      {errors.password && <p className="mt-1.5 text-xs text-red-500">{errors.password}</p>}
+            {errors.password && <p className="mt-1.5 text-xs text-red-500">{errors.password}</p>}
           </label>
           <label style={labelStyle}>
             Confirm password
-            <input name="confirmPassword" type={showpassword?"text":"password"} value={confirmpassword} 
-            onChange={(e)=>{setConfirmpassword(e.target.value)
-              setErrors({...errors,confirmpassword:""})
-            }} 
-            autoComplete="new-password" placeholder="Re-enter your password" minLength={8} required style={inputStyle} />
-            
-      {errors.confirmpassword && <p className="mt-1.5 text-xs text-red-500">{errors.confirmpassword}</p>}
+            <input name="confirmPassword" type={showpassword ? "text" : "password"} value={confirmpassword}
+              onChange={(e) => {
+                setConfirmpassword(e.target.value)
+                setErrors({ ...errors, confirmpassword: "" })
+              }}
+              autoComplete="new-password" placeholder="Re-enter your password" minLength={8} required style={inputStyle} />
+
+            {errors.confirmpassword && <p className="mt-1.5 text-xs text-red-500">{errors.confirmpassword}</p>}
           </label>
           {ServerError && (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs font-semibold text-rose-300">
-                {ServerError}
-              </div>
-            )}
+            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs font-semibold text-rose-300">
+              {ServerError}
+            </div>
+          )}
 
           <button disabled={loading} className="disabled:opacity-50 disabled:cursor-not-allowed" type="submit" style={{ marginTop: 4, padding: '13px 16px', border: 0, borderRadius: 8, backgroundColor: '#3157d5', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
-            {loading? "Creating an account":"Create account"}
+            {loading ? "Creating an account" : "Create account"}
           </button>
         </form>
 
