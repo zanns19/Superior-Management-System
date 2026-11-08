@@ -5,6 +5,7 @@ export default function page() {
   return (
     <>
       <Navbar />
+      <p>Hey Zuhair Khan the Founder of XCPS ,</p>
     </>
   )
 }

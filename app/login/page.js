@@ -1,8 +1,10 @@
 "use client"
 import React from 'react'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function login() {
+  const router = useRouter();
   const [form, setForm] = useState({email:"",password:""})
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
@@ -38,15 +40,17 @@ setErrors({...errors,[e.target.name]:""})
         credentials: "include",
         body:JSON.stringify(form)
       })
-      const data = res.json()
+      const data = res.json() 
       if(!res.ok){
         setServerError(data.message )
         return;
       }
+      router.push("/dashboard")
     } catch (error) {
-      
-    }
-  }
+  setServerError("Login request failed. Please try again.");
+} finally {
+  setLoading(false);
+}}
   return (
     <main style={{minHeight:'100vh', display:'grid', placeItems:'center', padding:'24px', boxSizing:'border-box', background:'linear-gradient(135deg, #eef2ff, #f8fafc 55%, #e0f2fe)', fontFamily:'Inter, ui-sans-serif, system-ui, sans-serif'}}>
       <section style={{width:'100%', maxWidth:'420px', padding:'40px', boxSizing:'border-box', background:'#fff', border:'1px solid #e5e7eb', borderRadius:'20px', boxShadow:'0 24px 60px rgba(15, 23, 42, .10)'}}>

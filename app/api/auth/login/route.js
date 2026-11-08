@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import dbconnect from "@/lib/mongodb"
 import Admin from "@/models/Admin"
 export async function POST(request) {
@@ -11,7 +12,7 @@ export async function POST(request) {
             )
         }
         await dbconnect()
-        const admin = await Admin.findOne({ email: email.toLowerCase().trim() })
+        const admin = await Admin.findOne({email})
         if (!admin) {
             return NextResponse.json(
                 {
@@ -22,8 +23,25 @@ export async function POST(request) {
                 }
             )
         }
-    } catch (error) {
 
+        const isPasswordCorrect = await bcrypt.compare(password,admin.passwordHash)
+        if(!isPasswordCorrect){
+            return NextResponse.json(
+                {message:"Invalid Password"},
+                {status:401}
+            )
+        }
+        return NextResponse.json(
+            {message:"User Login Succesfully"},
+            {status:200}
+        )
+        
+    } catch (error) {
+        console.log("Error",error)
+        return NextResponse.json(
+      { message: "Login failed" },
+      { status: 500 }
+    );
     }
 
 }
